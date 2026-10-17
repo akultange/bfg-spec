@@ -1,0 +1,39 @@
+---
+import Base from "../layouts/Base.astro";
+import { NOTICE_VERSION } from "../lib/fields";
+import { BASE } from "../lib/util";
+export const prerender = false;
+---
+
+<Base title="Collection notice (draft) · Buying for Good concept">
+  <header class="wrap top">
+    <a class="brand" href="/">Buying <i>for</i> Good</a>
+    <a class="back" href={`${BASE}/`}>Back to the form</a>
+  </header>
+  <main id="main" class="wrap">
+    <article class="prose" style="padding-block: clamp(20px, 5vw, 64px) 96px">
+      <p><span class="draft">Draft · concept only</span></p>
+      <h1>How your registration details are handled</h1>
+      <p>
+        This is a draft collection notice written for the concept build, to show where the real notice would sit and what it would cover.
+        The final wording comes from Buying for Good and its privacy policy.
+      </p>
+      <h2>What's collected</h2>
+      <ul>
+        <li>Your name, email address and the path you chose: supporter, business or charity.</li>
+        <li>The answers for that path only. Questions marked optional can be left blank.</li>
+        <li>Your two permissions, the exact wording you saw, and when you gave them.</li>
+      </ul>
+      <h2>Why</h2>
+      <ul>
+        <li>To reply to your registration. That's what the first box is for, and it's needed to register.</li>
+        <li>To send occasional news and updates, only if you tick the second box. Every update email includes a way to stop them.</li>
+      </ul>
+      <h2>Who sees it</h2>
+      <p>The people handling registrations, and the contact and email services that store and send messages for them. It is never sold.</p>
+      <h2>Seeing, changing or deleting it</h2>
+      <p>Your confirmation includes a private link where you can see what's stored, switch updates on or off, or delete everything.</p>
+      <p class="hint">Notice version: {NOTICE_VERSION}.</p>
+    </article>
+  </main>
+</Base>

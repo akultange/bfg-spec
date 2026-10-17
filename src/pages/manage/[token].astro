@@ -1,0 +1,206 @@
+---
+import Base from "../../layouts/Base.astro";
+import { afterResponse, getEnv } from "../../lib/env";
+import { FIELDS } from "../../lib/fields";
+import { processOutbox } from "../../lib/outbox";
+import {
+  consentLogFor,
+  deleteRegistration,
+  emailsFor,
+  findByToken,
+  parseAnswers,
+  setUpdates,
+  type RegistrationRow,
+} from "../../lib/registrations";
+import { AUDIENCE_ARTICLE, BASE, formatWhen } from "../../lib/util";
+
+export const prerender = false;
+
+const env = getEnv(Astro.locals);
+const db = env.DB;
+const token = Astro.params.token || "";
+const here = `${BASE}/manage/${token}`;
+Astro.response.headers.set("Cache-Control", "no-store");
+
+let row: RegistrationRow | null = /^[A-Za-z0-9_-]{20,64}$/.test(token) ? await findByToken(db, token) : null;
+
+if (Astro.request.method === "POST") {
+  if (!row) return Astro.redirect(here, 303);
+  const body = await Astro.request.formData();
+  const action = String(body.get("action") || "");
+  if (action === "updates_off" || action === "updates_on") {
+    await setUpdates(db, row, action === "updates_on", "manage page");
+    afterResponse(Astro.locals, processOutbox(db, env));
+    return Astro.redirect(`${here}?done=${action}`, 303);
+  }
+  if (action === "delete" && body.get("confirm") === "yes") {
+    await deleteRegistration(db, row);
+    return Astro.redirect(`${here}?done=deleted`, 303);
+  }
+  return Astro.redirect(here, 303);
+}
+
+afterResponse(Astro.locals, processOutbox(db, env));
+const done = Astro.url.searchParams.get("done");
+const confirmDelete = Astro.url.searchParams.get("confirm") === "delete";
+if (!row) Astro.response.status = done === "deleted" ? 200 : 404;
+
+const answers = row ? parseAnswers(row) : {};
+const shown = FIELDS.filter((f) => answers[f.name] !== undefined && answers[f.name] !== "").map((f) => {
+  const raw = answers[f.name];
+  const opt = f.options?.find((o) => o.value === raw);
+  return { label: f.label, value: Array.isArray(raw) ? raw.join(", ") : opt?.label ?? String(raw) };
+});
+const emails = row ? await emailsFor(db, row) : [];
+const log = row ? await consentLogFor(db, row) : [];
+const STATUS: Record<string, string> = {
+  preview: "Preview: not sent in this concept",
+  sent: "Sent",
+  pending: "Waiting to send",
+  processing: "Sending",
+  failed: "Failed: a person will follow up",
+};
+---
+
+<Base title="Your registration · Buying for Good concept">
+  <header class="wrap top">
+    <a class="brand" href="/">Buying <i>for</i> Good</a>
+    <a class="back" href="/">Back to the story</a>
+  </header>
+
+  <main id="main" class="wrap manage">
+    {
+      !row && done === "deleted" && (
+        <section class="card" aria-labelledby="gone-h">
+          <h1 id="gone-h">Deleted.</h1>
+          <p>Your registration and everything stored with it, including the emails, has been removed. This link no longer works.</p>
+          <div class="actions">
+            <a class="btn btn--line" href="/">Back to the story</a>
+            <a class="btn btn--line" href={`${BASE}/`}>Register again</a>
+          </div>
+        </section>
+      )
+    }
+
+    {
+      !row && done !== "deleted" && (
+        <section class="card" aria-labelledby="nf-h">
+          <h1 id="nf-h">This link doesn't open a registration.</h1>
+          <p>It may have been deleted, or the link was cut short when it was copied. Try the full link from your confirmation email, or register again.</p>
+          <div class="actions">
+            <a class="btn btn--teal" href={`${BASE}/`}>Go to the registration form</a>
+            <a class="btn btn--line" href="/">Back to the story</a>
+          </div>
+        </section>
+      )
+    }
+
+    {
+      row && (
+        <>
+          <div>
+            <p class="eyebrow">Your registration · {row.reference}</p>
+            <h1>
+              Registered as <em>{AUDIENCE_ARTICLE[row.audience]}</em>.
+            </h1>
+            <p class="lead">Saved {formatWhen(row.created_at)}. This page is private to whoever has the link.</p>
+          </div>
+
+          {done === "updates_off" && (
+            <p class="panel panel--info" role="status">You won't get news and updates any more. That's saved.</p>
+          )}
+          {done === "updates_on" && (
+            <p class="panel panel--info" role="status">You'll get occasional news and updates. Every email has a link to stop them.</p>
+          )}
+
+          <section class="card" aria-labelledby="sent-h">
+            <h2 id="sent-h">What you sent</h2>
+            <dl class="kv">
+              {shown.map((s) => (
+                <>
+                  <dt>{s.label}</dt>
+                  <dd>{s.value}</dd>
+                </>
+              ))}
+            </dl>
+          </section>
+
+          <section class="card" aria-labelledby="perm-h">
+            <h2 id="perm-h">Your permissions</h2>
+            <dl class="kv">
+              <dt>Contact about this registration</dt>
+              <dd>
+                <span class="pill">Yes</span> since {formatWhen(row.consent_contact_at)}
+                <p class="quote">“{row.consent_contact_text}”</p>
+              </dd>
+              <dt>News and updates</dt>
+              <dd>
+                {row.consent_updates === 1 ? (
+                  <>
+                    <span class="pill">Yes</span> since {formatWhen(row.consent_updates_at!)}
+                    <p class="quote">“{row.consent_updates_text}”</p>
+                  </>
+                ) : (
+                  <span class="pill pill--off">No</span>
+                )}
+              </dd>
+            </dl>
+            <form method="post" class="actions">
+              {row.consent_updates === 1 ? (
+                <button class="btn btn--line" type="submit" name="action" value="updates_off">Stop news and updates</button>
+              ) : (
+                <button class="btn btn--line" type="submit" name="action" value="updates_on">Send me news and updates</button>
+              )}
+            </form>
+            {log.length > 0 && (
+              <details>
+                <summary>Permission history ({log.length})</summary>
+                <ol class="log">
+                  {log.map((e) => (
+                    <li>
+                      {formatWhen(e.at)}: {e.action === "grant" ? "gave" : "withdrew"} {e.kind === "contact" ? "contact permission" : "news and updates"} ({e.source})
+                    </li>
+                  ))}
+                </ol>
+              </details>
+            )}
+            <p class="hint">Collection notice version: {row.notice_version}.</p>
+          </section>
+
+          <section class="card" aria-labelledby="mail-h">
+            <h2 id="mail-h">Emails about this registration</h2>
+            {emails.length === 0 && <p>None yet.</p>}
+            {emails.map((e) => (
+              <article style="display:grid;gap:10px">
+                <p>
+                  <b>{e.subject}</b>
+                  <br />
+                  <span class="hint">
+                    {STATUS[e.status] ?? e.status} · {formatWhen(e.created_at)}
+                  </span>
+                </p>
+                <iframe class="mailprev" title={`Email: ${e.subject}`} srcdoc={e.body_html} sandbox="" />
+              </article>
+            ))}
+          </section>
+
+          <section class="card" aria-labelledby="del-h">
+            <h2 id="del-h">Delete your registration</h2>
+            <p>This removes everything you sent, your permissions and the emails above. It can't be undone.</p>
+            {confirmDelete ? (
+              <form method="post" class="actions">
+                <input type="hidden" name="confirm" value="yes" />
+                <button class="btn btn--danger" type="submit" name="action" value="delete">Yes, delete it permanently</button>
+                <a class="btn btn--line" href={here}>Keep it</a>
+              </form>
+            ) : (
+              <div class="actions">
+                <a class="btn btn--line" href={`${here}?confirm=delete`}>Delete my registration</a>
+              </div>
+            )}
+          </section>
+        </>
+      )
+    }
+  </main>
+</Base>

@@ -1,0 +1,77 @@
+---
+import type { Field } from "../lib/fields";
+
+interface Props {
+  field: Field;
+  disabled?: boolean;
+  wide?: boolean;
+}
+const { field: f, disabled = false, wide = false } = Astro.props;
+const req = !!f.required;
+const hintId = f.hint ? `${f.name}-hint` : null;
+const describedBy = [hintId, `${f.name}-err`].filter(Boolean).join(" ");
+const group = f.type === "radio" || f.type === "checkboxes";
+const cls = wide ? "full" : undefined;
+---
+
+{
+  group ? (
+    <fieldset class={cls} data-field={f.name} data-type={f.type} data-required={req ? "1" : undefined} data-label={f.label} aria-describedby={describedBy}>
+      <legend>
+        {f.label}
+        {!req && <span class="optl">optional</span>}
+      </legend>
+      <div class="pills">
+        {f.options!.map((o, i) => (
+          <label class="opt">
+            <input
+              type={f.type === "radio" ? "radio" : "checkbox"}
+              name={f.name}
+              id={`${f.name}-${i}`}
+              value={o.value}
+              checked={f.defaultValue === o.value}
+              disabled={disabled}
+            />
+            <span class="opt__box">{o.label ?? o.value}</span>
+          </label>
+        ))}
+      </div>
+      {f.hint && <p class="hint" id={hintId}>{f.hint}</p>}
+      <p class="err" id={`${f.name}-err`} hidden />
+    </fieldset>
+  ) : (
+    <div class:list={["f", cls]} data-field={f.name} data-type={f.type} data-required={req ? "1" : undefined} data-label={f.label}>
+      <label for={f.name}>
+        {f.label}
+        {!req && <span class="optl">optional</span>}
+      </label>
+      {f.type === "select" ? (
+        <select id={f.name} name={f.name} aria-required={req ? "true" : undefined} aria-describedby={describedBy} disabled={disabled}>
+          <option value="">Choose one</option>
+          {f.options!.map((o) => (
+            <option value={o.value}>{o.label ?? o.value}</option>
+          ))}
+        </select>
+      ) : f.type === "textarea" ? (
+        <textarea id={f.name} name={f.name} rows="3" maxlength={f.max} aria-describedby={describedBy} disabled={disabled} />
+      ) : (
+        <input
+          type={f.type}
+          id={f.name}
+          name={f.name}
+          autocomplete={f.autocomplete}
+          inputmode={f.inputmode as any}
+          placeholder={f.placeholder}
+          maxlength={f.max}
+          aria-required={req ? "true" : undefined}
+          aria-describedby={describedBy}
+          autocapitalize={f.type === "email" ? "none" : undefined}
+          spellcheck={f.type === "email" ? "false" : undefined}
+          disabled={disabled}
+        />
+      )}
+      {f.hint && <p class="hint" id={hintId}>{f.hint}</p>}
+      <p class="err" id={`${f.name}-err`} hidden />
+    </div>
+  )
+}

@@ -1,0 +1,13 @@
+{
+  "cloud": {
+    "framework": "astro"
+  },
+  "devlink-export": {
+    "rootDir": "./webflow",
+    "components": ".*",
+    "componentGroups": ".*",
+    "ts": false,
+    "cssScopes": true,
+    "relativeHrefRoot": "/"
+  }
+}

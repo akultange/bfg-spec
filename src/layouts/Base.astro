@@ -1,0 +1,33 @@
+---
+import "@fontsource-variable/hanken-grotesk";
+import "@fontsource-variable/source-serif-4";
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+const { title, description = "A concept build for the Buying for Good website proposal. Not the official site." } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en-AU">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0B2540" />
+    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/favicon.svg`} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <div class="specbar" role="note" aria-label="About this page">
+      <b>SPEC</b>
+      <span class="specbar__long">Concept made for Buying for Good's proposal review, not the official site</span>
+      <span class="specbar__short">Concept for proposal review, not the official site</span>
+    </div>
+    <slot />
+  </body>
+</html>

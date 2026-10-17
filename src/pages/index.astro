@@ -1,0 +1,183 @@
+---
+import Field from "../components/Field.astro";
+import Base from "../layouts/Base.astro";
+import { getEnv, isSpecMode } from "../lib/env";
+import { AUDIENCE_FIELDS, CONSENT, FIELDS } from "../lib/fields";
+import { turnstileEnabled, turnstileSiteKey } from "../lib/turnstile";
+import { AUDIENCE_ARTICLE, AUDIENCE_LABEL, AUDIENCES, BASE, isAudience, type Audience } from "../lib/util";
+
+export const prerender = false;
+
+let env: Env;
+try {
+  env = getEnv(Astro.locals);
+} catch {
+  env = {} as Env;
+}
+
+const pathParam = Astro.url.searchParams.get("path");
+const selected: Audience | null = isAudience(pathParam) ? pathParam : null;
+const renderedAt = Date.now();
+const spec = isSpecMode(env);
+const ts = { enabled: turnstileEnabled(env), siteKey: turnstileSiteKey(env) };
+const mailMode = env.RESEND_API_KEY && env.MAIL_FROM ? "send" : "preview";
+const f = (name: string) => FIELDS.find((x) => x.name === name)!;
+
+const ICON: Record<Audience, string> = { supporter: "user", business: "store", charity: "heart" };
+const SUB: Record<Audience, string> = { supporter: "I shop", business: "We sell", charity: "We help" };
+const PLURAL: Record<Audience, string> = { supporter: "supporters", business: "businesses", charity: "charities" };
+const isWide = (name: string, type: string) =>
+  ["businessName", "orgName"].includes(name) || type === "checkboxes" || type === "radio" || type === "textarea";
+
+Astro.response.headers.set("Cache-Control", "no-store");
+---
+
+<Base title="Register your interest · Buying for Good concept">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"></path></symbol>
+    <symbol id="i-store" viewBox="0 0 24 24"><path d="M3 9l1.5-5h15L21 9"></path><path d="M4 9v11h16V9"></path><path d="M3 9h18"></path><path d="M9 20v-6h6v6"></path></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 1 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8z"></path></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v6"></path><path d="M12 16.5v.5"></path></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"></path></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></symbol>
+  </svg>
+
+  <header class="wrap top">
+    <a class="brand" href="/">Buying <i>for</i> Good</a>
+    <a class="back" href="/"><svg class="ic" aria-hidden="true"><use href="#i-back"></use></svg>Back to the story</a>
+  </header>
+
+  <main id="main" class="join">
+    <div class="wrap join__grid">
+      <div class="join__head">
+        <p class="eyebrow">Register your interest</p>
+        <h1>Be there <em>from the first ripple.</em></h1>
+        <p class="lead">Two minutes, and only the questions that apply to you.</p>
+      </div>
+      <div class="join__details">
+        <ol class="next" aria-label="What happens next">
+          <li>We save your details and confirm on this page.</li>
+          <li>A person replies by email. Nothing is booked automatically.</li>
+          <li>You only get news and updates if you tick that box.</li>
+        </ol>
+        <p class="help">Trouble with the form? On the live site, this box shows Buying for Good's email address, so anyone can register by hand.</p>
+      </div>
+
+      <div class="formcard">
+        <form id="eoi" novalidate aria-describedby="eoi-req" data-rendered-at={renderedAt}>
+          <div class="restored" id="eoi-restored" hidden>
+            <span>We kept the answers you hadn't sent yet.</span>
+            <button type="button" class="linkbtn" id="eoi-reset">Start over</button>
+          </div>
+          <div class="panel panel--err" id="eoi-summary" tabindex="-1" hidden></div>
+
+          <fieldset data-field="audience" data-type="radio" data-required="1" data-label="I'm registering as" aria-describedby="audience-err">
+            <legend>I'm registering as</legend>
+            <div class="aud">
+              {
+                AUDIENCES.map((a) => (
+                  <label class="opt">
+                    <input type="radio" name="audience" id={`aud-${a}`} value={a} checked={selected === a} />
+                    <span class="opt__box">
+                      <svg class="ic" aria-hidden="true"><use href={`#i-${ICON[a]}`} /></svg>
+                      <span>
+                        <b>{AUDIENCE_ARTICLE[a].replace(/^a /, "A ")}</b>
+                        <small>{SUB[a]}</small>
+                      </span>
+                    </span>
+                  </label>
+                ))
+              }
+            </div>
+            <p class="err" id="audience-err" hidden></p>
+          </fieldset>
+
+          <p class="note" id="eoi-req">Every question needs an answer unless it says optional.</p>
+
+          <div class="row row--2"><Field field={f("firstName")} /><Field field={f("lastName")} /></div>
+          <Field field={f("email")} />
+          <div class="row row--2"><Field field={f("mobile")} /><Field field={f("postcode")} /></div>
+
+          <p class="pickfirst" id="eoi-pick" hidden={!!selected}>Choose supporter, business or charity above to see the questions for you.</p>
+
+          {
+            AUDIENCES.map((a) => (
+              <div class="block" data-show-for={a} hidden={selected !== a}>
+                <p class="block__t">
+                  <svg class="ic" aria-hidden="true"><use href={`#i-${ICON[a]}`} /></svg>For {PLURAL[a]}
+                </p>
+                <div class="row row--2">
+                  {AUDIENCE_FIELDS(a).map((fd) => (
+                    <Field field={fd} disabled={selected !== a} wide={isWide(fd.name, fd.type)} />
+                  ))}
+                </div>
+              </div>
+            ))
+          }
+
+          <Field field={f("followUp")} />
+          <Field field={f("message")} />
+
+          <div class="consents">
+            <div class="f" data-field="consentContact" data-type="checkbox" data-required="1" data-label={CONSENT.contact.label}>
+              <label class="check" for="consentContact">
+                <input type="checkbox" id="consentContact" name="consentContact" aria-required="true" aria-describedby="consentContact-err" />
+                <span><b>{CONSENT.contact.label}</b><small>{CONSENT.contact.small}</small></span>
+              </label>
+              <p class="err" id="consentContact-err" hidden></p>
+            </div>
+            <label class="check" for="consentUpdates">
+              <input type="checkbox" id="consentUpdates" name="consentUpdates" />
+              <span><b>{CONSENT.updates.label}</b> <span class="optl">optional</span><small>{CONSENT.updates.small}</small></span>
+            </label>
+            <p class="notice" id="notice">
+              We collect these details to reply to your registration and, only if you tick the second box, to send occasional updates.
+              They're stored securely, seen only by the people handling registrations, and never sold. You can see, change or delete them any
+              time from the link in your confirmation. <a href={`${BASE}/privacy-notice`}>Read the full collection notice</a>.
+            </p>
+          </div>
+
+          <label class="hp" aria-hidden="true">Leave this field empty<input type="text" name="hp" id="hp" tabindex="-1" autocomplete="off" /></label>
+
+          {ts.enabled && <div class="ts" id="ts" data-sitekey={ts.siteKey} />}
+          <p class="hint" id="ts-note" hidden></p>
+
+          <div class="panel panel--info" id="eoi-dup" tabindex="-1" hidden></div>
+          <div class="panel panel--err" id="eoi-fail" tabindex="-1" hidden></div>
+
+          <div class="submit">
+            <button class="btn btn--teal" type="submit" id="eoi-submit"><span class="lbl">Register my interest</span></button>
+          </div>
+          <p class="sr" id="eoi-live" aria-live="polite"></p>
+        </form>
+
+        <div class="done" id="eoi-done" tabindex="-1" hidden></div>
+        <noscript>
+          <p class="panel panel--info">This form needs JavaScript to check your answers before sending. On the live site, an email address here lets anyone register by hand.</p>
+        </noscript>
+      </div>
+    </div>
+  </main>
+
+  {
+    spec && (
+      <div class="rt" id="rt">
+        <div class="rt__panel" id="rt-panel" hidden>
+          <h2>Reviewer tools</h2>
+          <p>This is a concept build. Registrations are saved for real in its own test database; emails are kept as previews on each registration's private page.</p>
+          <label class="check" for="rt-fail">
+            <input type="checkbox" id="rt-fail" />
+            <span><b>Fail the next submission</b><small>Sends the next registration into a simulated outage so you can see the failure path. Nothing is saved.</small></span>
+          </label>
+        </div>
+        <button class="rt__btn" type="button" id="rt-btn" aria-expanded="false" aria-controls="rt-panel">Reviewer tools</button>
+      </div>
+    )
+  }
+
+  <script type="application/json" id="eoi-cfg" set:html={JSON.stringify({ base: BASE, labels: AUDIENCE_LABEL, ts, mailMode })} />
+  <script>
+    import "../scripts/register.ts";
+  </script>
+</Base>
