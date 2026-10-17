@@ -10,6 +10,9 @@ export default defineConfig({
   base: "/register",
   output: "server",
   compressHTML: true,
+  // The stylesheet is small (about 7 KB compressed). Inlining it removes a render-blocking
+  // request to the separate asset host, which was the main delay before first paint on mobile.
+  build: { inlineStylesheets: "always" },
   adapter: cloudflare({
     platformProxy: {
       enabled: true,
