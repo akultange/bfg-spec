@@ -5,7 +5,7 @@
  * Only people who ticked the updates box are flagged for the mailing list.
  */
 export interface CrmPayload {
-  source: "bfg-spec";
+  source: "kindtill-concept";
   reference: string;
   audience: string;
   email: string;

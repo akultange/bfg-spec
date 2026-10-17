@@ -11,7 +11,7 @@ interface Props {
   title: string;
   description?: string;
 }
-const { title, description = "A concept build for the Buying for Good website proposal. Not the official site." } = Astro.props;
+const { title, description = "A portfolio concept by Luka Skhiladze and Giorgi Kheladze. Kindtill is a fictional brand." } = Astro.props;
 ---
 
 <!doctype html>
@@ -31,8 +31,8 @@ const { title, description = "A concept build for the Buying for Good website pr
     <a class="skip" href="#main">Skip to content</a>
     <div class="specbar" role="note" aria-label="About this page">
       <b>SPEC</b>
-      <span class="specbar__long">Concept made for Buying for Good's proposal review, not the official site</span>
-      <span class="specbar__short">Concept for proposal review, not the official site</span>
+      <span class="specbar__long">Portfolio concept by Luka Skhiladze and Giorgi Kheladze. Kindtill is a fictional brand.</span>
+      <span class="specbar__short">Portfolio concept. Kindtill is a fictional brand.</span>
     </div>
     <slot />
   </body>

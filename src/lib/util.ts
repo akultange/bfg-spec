@@ -43,12 +43,12 @@ export function randomToken(bytes = 24) {
 
 const REF_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
-/** Human-friendly reference, e.g. BFG-7KQ2-M9XD. */
+/** Human-friendly reference, e.g. KTL-7KQ2-M9XD. */
 export function makeReference() {
   const a = new Uint8Array(8);
   crypto.getRandomValues(a);
   const c = Array.from(a, (b) => REF_ALPHABET[b % 32]).join("");
-  return `BFG-${c.slice(0, 4)}-${c.slice(4)}`;
+  return `KTL-${c.slice(0, 4)}-${c.slice(4)}`;
 }
 
 export function esc(s: unknown) {

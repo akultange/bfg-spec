@@ -1,13 +1,13 @@
-# bfg-spec
+# Kindtill concept
 
-A concept build made for a website proposal review. It is **not** the official Buying for Good website and is not affiliated with Buying for Good.
+A portfolio concept by Luka Skhiladze and Giorgi Kheladze: a scroll-led story page and a three-path registration form. **Kindtill is a fictional brand.**
 
 - `/` — the story page, built in Webflow (`bfg-spec.webflow.io`).
 - `/register` — this repository: a Webflow Cloud app (Astro + SQLite/D1) that runs the three-path registration form end to end.
 
 ## Photo credits
 
-Didier Baertschiger, CC0 (ocean). Kimberly Farmer and Eric Li on Unsplash. Troy Carroll on Pexels. Radu Galan, Kacper Slusarczyk and Ubuntu Kylin community contributors, CC BY-SA via Ubuntu community wallpapers, cropped. Final licensed images to be confirmed with the client.
+Didier Baertschiger, CC0 (ocean). Kimberly Farmer and Eric Li on Unsplash. Troy Carroll on Pexels. Radu Galan, Kacper Slusarczyk and Ubuntu Kylin community contributors, CC BY-SA via Ubuntu community wallpapers, cropped. Licences as listed.
 
 ## The registration app (`/register`)
 

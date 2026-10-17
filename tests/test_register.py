@@ -159,7 +159,7 @@ def test_draft_survives_reload(page):
     submit(page)
     page.wait_for_selector("#eoi-done:not([hidden])")
     assert len(rows_for(email)) == 1
-    assert page.evaluate("localStorage.getItem('bfg-spec-register-draft-v1')") is None
+    assert page.evaluate("localStorage.getItem('kindtill-register-draft-v1')") is None
 
 
 # 9 ---------------------------------------------------------------------------

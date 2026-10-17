@@ -14,7 +14,7 @@ interface Env {
   TURNSTILE_SECRET?: string;
   /** Secret. With MAIL_FROM set, emails are sent through Resend; otherwise they are stored as previews. */
   RESEND_API_KEY?: string;
-  /** e.g. "Buying for Good concept <hello@yourdomain>" — a domain verified in Resend. */
+  /** e.g. "Kindtill concept <hello@yourdomain>" — a domain verified in Resend. */
   MAIL_FROM?: string;
   /** Secret. When set, each registration is POSTed here as JSON for the client's CRM or email tool. */
   CRM_WEBHOOK_URL?: string;

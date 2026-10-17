@@ -7,7 +7,7 @@ export interface RenderedEmail {
 }
 
 const SENDER_NOTE =
-  "Sent by the Buying for Good website concept, a proposal demo by Luka Skhiladze. This is not Buying for Good. " +
+  "Sent by the Kindtill website concept, a portfolio demo by Luka Skhiladze and Giorgi Kheladze. Kindtill is a fictional brand. " +
   "You received it because this address was entered in the concept's registration form.";
 
 const NEXT: Record<Audience, string> = {

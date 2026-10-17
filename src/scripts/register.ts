@@ -18,7 +18,7 @@ function init(form: HTMLFormElement) {
     String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
   const icon = (id: string) => `<svg class="ic" aria-hidden="true"><use href="#${id}"></use></svg>`;
 
-  const DRAFT_KEY = "bfg-spec-register-draft-v1";
+  const DRAFT_KEY = "kindtill-register-draft-v1";
   const ARTICLE: Record<Aud, string> = { supporter: "a supporter", business: "a business", charity: "a charity" };
   const NEXT: Record<Aud, string> = {
     supporter: "A person will reply by email about how supporters can take part.",
@@ -252,7 +252,7 @@ function init(form: HTMLFormElement) {
     submitBtn.innerHTML = on ? `<span class="spin" aria-hidden="true"></span><span class="lbl">Sending…</span>` : `<span class="lbl">Register my interest</span>`;
   }
   function mailtoHref() {
-    const subject = "My registration (Buying for Good concept)";
+    const subject = "My registration (Kindtill concept)";
     return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(valuesForSummary())}`;
   }
   function showFailure(kind: "offline" | "timeout" | "network" | "server" | "verification", message?: string) {
@@ -270,7 +270,7 @@ function init(form: HTMLFormElement) {
       `<div class="panel__row"><button class="btn btn--teal" type="button" data-act="retry">Try again</button>` +
       `<button class="btn btn--line" type="button" data-act="copy">Copy my answers</button>` +
       `<a class="btn btn--line" data-act="email" href="${esc(mailtoHref())}">Email them instead</a></div>` +
-      `<p class="hint">Emailing works even when this form doesn't. On the live site it goes to Buying for Good's inbox.</p>` +
+      `<p class="hint">Emailing works even when this form doesn't. On a real site it goes to the organisation's inbox.</p>` +
       `<textarea class="copyout" readonly hidden aria-label="Your answers, ready to copy"></textarea>`;
     fail.hidden = false;
     fail.focus();
@@ -503,7 +503,7 @@ function init(form: HTMLFormElement) {
   }
   const tsBox = $("#ts");
   if (tsBox && cfg.ts?.enabled) {
-    (window as any).__bfgTurnstileReady = () => {
+    (window as any).__ktTurnstileReady = () => {
       try {
         tsWidget = (window as any).turnstile.render(tsBox, {
           sitekey: tsBox.dataset.sitekey,
@@ -517,7 +517,7 @@ function init(form: HTMLFormElement) {
       }
     };
     const s = document.createElement("script");
-    s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=__bfgTurnstileReady";
+    s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=__ktTurnstileReady";
     s.async = true;
     s.defer = true;
     s.onerror = showTsNote;

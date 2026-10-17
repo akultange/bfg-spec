@@ -1,6 +1,6 @@
-# Concept results, checked against Milestone 4
+# Kindtill concept: results against a launch checklist
 
-**This is a concept build made for a proposal review. It is not the official Buying for Good website** and is not affiliated with Buying for Good. Copy marked "Draft copy" and the example causes are placeholders, not claims.
+**A portfolio concept by Luka Skhiladze and Giorgi Kheladze. Kindtill is a fictional brand.** Copy marked "Draft copy" and the example causes are placeholders, not claims.
 
 - Story page (Webflow, free plan, native interactions only): **https://bfg-spec.webflow.io**
 - Registration form (Webflow Cloud app with its own database): **https://bfg-spec.webflow.io/register/**
@@ -8,14 +8,14 @@
 
 Checked on 17 October 2026. "Live" means the published site above; "local" means the same app code running on a test machine against a fresh database.
 
-## Milestone 4, line by line
+## Launch checklist, line by line
 
-Milestone 4 in the brief: *"Check all devices and browsers, loading speed, keyboard access, reduced-motion options, links, and form pathways. Test failed submissions and duplicate prevention. Complete basic search info and agreed analytics."*
+The checks a site should pass before launch: devices and browsers, loading speed, keyboard access, reduced-motion options, links and form pathways, failed submissions and duplicate prevention, basic search info and agreed analytics.
 
-| Milestone 4 item | What was checked | How | Result |
+| Checklist item | What was checked | How | Result |
 |---|---|---|---|
 | **Devices and browsers** | Story page and form at phone (375 and 390 px), tablet (768 px) and desktop (1440 px) widths | Chromium (desktop browser pane, live site); Chromium 141 via Playwright (local) | No sideways scrolling at any width; every section re-lays out for phones (single column, stacked tabs, two-column photo grid). Safari, Firefox and real phones are in the list below. |
-| **Loading speed** | Mobile lab test of the concept and of the four sites named in the brief, same profile, same morning, three runs each | PageSpeed Insights, Lighthouse 13.5, emulated Moto G Power on slow 4G | Story page: performance **81** (median of three), largest paint 3.7 s, layout shift 0.003, blocking time 0 ms. Form: **84**, blocking time 0 ms. The four reference sites: 35 to 62 ([table below](#loading-speed-mobile)). |
+| **Loading speed** | Mobile lab test of the concept and of four well-known storytelling sites, same profile, same morning, three runs each | PageSpeed Insights, Lighthouse 13.5, emulated Moto G Power on slow 4G | Story page: performance **81** (median of three), largest paint 3.7 s, layout shift 0.003, blocking time 0 ms. Form: **84**, blocking time 0 ms. The four reference sites: 35 to 62 ([table below](#loading-speed-mobile)). |
 | **Keyboard access** | Story page by keyboard alone; the form completed by keyboard alone | Real key presses (live); Playwright (local, test 23) | Skip link first, then every link, tab and question in reading order, each with a visible focus ring. Audience tabs switch with the arrow keys. The Business path completed and confirmed without a mouse. |
 | **Reduced-motion options** | The device's "reduce motion" setting on and off | Real setting on (live); setting overridden in a test copy of the live page (live); test 24 (local) | **On:** no scroll animations run and nothing is hidden. The ripple shows as one finished picture: five purchases, five rings, every label. **Off:** desktop gets the pinned, scroll-driven sequence; phones and tablets get unpinned step-by-step reveals. |
 | **Links** | Every link on the story page, the three path links, the CMS item pages, the collection notice | Each URL requested on the live site | All return 200. The three path links open the form with that path already chosen. |
@@ -23,7 +23,7 @@ Milestone 4 in the brief: *"Check all devices and browsers, loading speed, keybo
 | **Failed submissions** | Simulated outage on the live app; offline, timeout and server error locally | Reviewer tools on the live form; tests 8–10 (local) | Every answer stays on screen and on the device. The visitor gets *Try again*, *Copy my answers* and *Email them instead*. *Try again* saves exactly once. |
 | **Duplicate prevention** | Same email typed with different capitals and spaces; double-tap; two identical requests at the same moment; retry after a lost response | Live duplicate attempt; tests 5–7 and 11–12 (local, checked in the database) | One registration per email per path, enforced by the database. A repeat gets a message that reveals nothing stored, and the address on file is sent a manage link. |
 | **Basic search info** | Page title and meta description on every page; social preview text on the home page | Page source on the live site | Set, and each one says it is a concept. The form pages also send `noindex`. The story page can't be kept out of search on the free plan (Webflow needs a paid site plan for that), so its title and description carry the concept label instead. |
-| **Agreed analytics** | Not part of the concept | — | The free Webflow plan allows no scripts. For the real build: privacy-friendly events for *path chosen*, *form started* and *registration sent*, agreed with you first. |
+| **Agreed analytics** | Not part of the concept | — | The free Webflow plan allows no scripts. For the real build: privacy-friendly events for *path chosen*, *form started* and *registration sent*, agreed with the client first. |
 | **Accessibility** (supports the items above) | Automated WCAG 2.0–2.2 A/AA rules | axe-core 4.10 on the live story page at desktop and phone width, with every tab shown and every FAQ open; test 22 on five form states (local) | **0 issues** after one fix (a small grey note on a light background was darkened to pass contrast). Lighthouse accessibility: **100** on the story page and on the form (the form scored 96 until the reviewer-tools button was moved off the free-plan Webflow badge). |
 
 ## Loading speed (mobile)
@@ -60,7 +60,7 @@ Only transforms and opacity are animated. The ring picture has a text descriptio
 |---|---|
 | ![The ripple mid-scroll on desktop: three purchases lit, three rings](screens/desktop-ripple-mid-scroll.png) | ![Phone: the five purchases as a list](screens/phone-2-ripple-list.jpg) |
 
-## Editable by Buying for Good
+## Editable by the site owner
 
 Benefits and FAQs are CMS items in two collections (Benefits, FAQs), 18 in all, shown per audience in Webflow's native tabs. Changing wording, adding a question or reordering is done in the Webflow Editor without touching the design. Brand colours are site variables, so a colour change updates every section at once.
 
@@ -77,10 +77,10 @@ Benefits and FAQs are CMS items in two collections (Benefits, FAQs), 18 in all, 
 
 ## Stranger test
 
-Three to five people who have never heard of Buying for Good, each on their own phone:
+Three to five people who have never heard of Kindtill, each on their own phone:
 
 1. Open https://bfg-spec.webflow.io and scroll at your own pace until the six photos.
-2. Without scrolling back up: *"In one sentence, what is Buying for Good?"*
+2. Without scrolling back up: *"In one sentence, what is Kindtill?"*
 3. Write the answer down word for word.
 
 Pass: at least three people mention everyday shopping **and** charities being funded.

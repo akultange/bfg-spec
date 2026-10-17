@@ -1,6 +1,6 @@
 # Registration form: break-test results
 
-Run 2026-10-17 02:56 UTC. 27 of 27 passed.
+Run 2026-10-17 12:34 UTC. 27 of 27 passed.
 
 Environment: the built Webflow Cloud worker running locally under `wrangler dev` with a fresh local D1 (SQLite) database; Chromium 141.0.7390.37 (headless, Playwright); Python 3.13.16. Turnstile is switched off for local runs (Cloudflare isn't reachable from the test machine); the deployed app uses Cloudflare's test keys. Every check reads the database file directly, not only the page.
 
@@ -38,12 +38,12 @@ Environment: the built Webflow Cloud worker running locally under `wrangler dev`
 
 | Type | Bytes |
 |---|---|
-| HTML | 36,068 |
+| HTML | 36,075 |
 | CSS | 0 |
-| JavaScript | 12,844 |
+| JavaScript | 12,830 |
 | Fonts | 85,640 |
 | Other | 0 |
-| Total | 134,552 |
+| Total | 134,545 |
 
 ## Accessibility (axe-core, WCAG 2.0–2.2 A/AA rules)
 

@@ -63,7 +63,7 @@ function crmPayload(row: RegistrationRow): CrmPayload {
   const a = parseAnswers(row);
   const s = (k: string) => (typeof a[k] === "string" && a[k] ? String(a[k]) : null);
   return {
-    source: "bfg-spec",
+    source: "kindtill-concept",
     reference: row.reference,
     audience: row.audience,
     email: row.email_norm,
