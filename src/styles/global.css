@@ -156,8 +156,8 @@ input[aria-invalid="true"], select[aria-invalid="true"], textarea[aria-invalid="
 .done li .ic { margin-top: 0.2em; color: var(--teal-d); }
 .done__ref { font: 600 0.875rem/1.3 var(--sans); letter-spacing: 0.08em; color: var(--ink-3); }
 
-/* Reviewer tools (spec only) */
-.rt { position: fixed; z-index: 60; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); display: grid; justify-items: end; gap: 10px; }
+/* Reviewer tools (spec only). Bottom-left, so it never sits on top of the "Made in Webflow" badge (bottom-right on the free plan). */
+.rt { position: fixed; z-index: 60; left: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); display: grid; justify-items: start; gap: 10px; }
 .rt__btn { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--navy); color: #fff; font: 600 0.875rem/1 var(--sans); cursor: pointer; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28); }
 .rt__panel { width: min(340px, calc(100vw - 24px)); padding: 18px; border-radius: 18px; background: #fff; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.32), 0 0 0 1px var(--line); display: grid; gap: 12px; font-size: 0.9375rem; color: var(--ink-2); }
 .rt__panel h2 { font: 650 1rem/1.2 var(--sans); color: var(--ink); }
